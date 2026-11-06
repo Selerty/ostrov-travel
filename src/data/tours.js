@@ -1,6 +1,7 @@
-import { addDays, localToday } from "./trip";
+import { countries } from "./destinations.js";
+import { addDays, localToday } from "./trip.js";
 // Illustrative inventory, not real hotel offers, flight schedules or availability.
-export const hotels = [
+const baliHotels = [
   {
     id: "canggu",
     destination: "Чангу",
@@ -33,7 +34,7 @@ export const hotels = [
   },
   {
     id: "islands",
-    destination: "Острова",
+    destination: "Нуса-Дуа",
     title: "Островное время",
     place: "Нуса-Дуа · Бали",
     stars: 5,
@@ -46,6 +47,44 @@ export const hotels = [
     adultPrice: 265000,
     childPrice: 195000,
   },
+];
+export const hotels = [
+  ...baliHotels.map((h) => ({
+    ...h,
+    country: "indonesia",
+    countryName: "Индонезия",
+    arrival: "Денпасар",
+  })),
+  ...countries
+    .filter((c) => c.id !== "indonesia")
+    .flatMap((country, ci) =>
+      country.resorts.map((resort, i) => ({
+        id: `${country.id}-${i}`,
+        country: country.id,
+        countryName: country.name,
+        arrival:
+          {
+            egypt: ["Шарм-эль-Шейх", "Хургада", "Марса-Алам"],
+            turkey: ["Анталья", "Бодрум", "Анталья"],
+            thailand: ["Пхукет", "Бангкок", "Самуи"],
+            italy: ["Рим", "Катания", "Ольбия"],
+            greece: ["Ираклион", "Родос", "Корфу"],
+            georgia: ["Тбилиси", "Батуми", "Батуми"],
+            uae: ["Дубай", "Абу-Даби", "Рас-эль-Хайма"],
+          }[country.id]?.[i] || country.arrival,
+        destination: resort,
+        title: `Ваш отдых: ${resort}`,
+        place: `${resort} · ${country.name}`,
+        stars: i === 0 ? 4 : 5,
+        rating: [4.6, 4.8, 4.7][i],
+        image: null,
+        alt: "",
+        description: `Демонстрационный вариант отдыха: ${resort}, ${country.name}. Программа и отель будут уточнены после подключения поставщика туров.`,
+        amenities: ["Трансфер", "Проживание", "Страховка"],
+        adultPrice: 95000 + ci * 11000 + i * 15000,
+        childPrice: 65000 + ci * 8000 + i * 10000,
+      })),
+    ),
 ];
 export const money = (value) =>
   new Intl.NumberFormat("ru-RU", {
@@ -103,8 +142,8 @@ export function matchingHotels(trip) {
   return hotels
     .filter(
       (h) =>
-        trip.destination === "Бали, Индонезия" ||
-        h.destination === trip.destination,
+        (trip.country === "any" || h.country === trip.country) &&
+        (trip.destination === "any" || h.destination === trip.destination),
     )
     .map((h) => ({ ...h, offers: getOffers(h, trip) }))
     .filter((h) => h.offers.length);

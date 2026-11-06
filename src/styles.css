@@ -1990,3 +1990,65 @@ body:has([data-slot="sheet-content"]) {
     min-height: 44px;
   }
 }
+.country-trigger {
+  width: 100%;
+  height: 46px;
+  justify-content: start;
+  padding: 10px 12px;
+  font-size: 14px;
+  min-width: 0;
+}
+.country-trigger > span {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.country-popover {
+  width: max(260px, var(--radix-popover-trigger-width));
+  max-width: calc(100vw - 24px);
+  z-index: 80;
+}
+.country-popover [cmdk-item] {
+  cursor: pointer;
+}
+.search-secondary > div > .finder-field + .finder-field {
+  margin-top: 18px;
+}
+.hotel-placeholder {
+  background: var(--mist);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 12px;
+  padding: 28px;
+  min-height: 240px;
+}
+.hotel-placeholder > strong {
+  font-size: 27px;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+.hotel-placeholder > span {
+  font-size: 14px;
+}
+.hotel-placeholder > small {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.details-cover > .hotel-placeholder {
+  min-height: 200px;
+  border-radius: 8px;
+}
+.hotel-overview > .hotel-placeholder {
+  grid-row: span 2;
+}
+@media (max-width: 720px) {
+  .hotel-placeholder {
+    min-height: 180px;
+  }
+}

@@ -1,3 +1,4 @@
+import { countryName } from "../data/destinations";
 import { useState } from "react";
 import { ArrowRight, Star, SlidersHorizontal } from "lucide-react";
 import { matchingHotels, money, tourPrice } from "../data/tours";
@@ -44,8 +45,9 @@ export function TourResults({ search, onSelect, onCustom }) {
             Ваш ритм.
           </h2>
           <p>
-            {search.departureCity} → {search.destination} · вылет{" "}
-            {formatDate(search.startDate)}–{formatDate(search.endDate)} ·{" "}
+            {search.departureCity} → {countryName(search.country)}
+            {search.destination !== "any" ? ` · ${search.destination}` : ""} ·
+            вылет {formatDate(search.startDate)}–{formatDate(search.endDate)} ·{" "}
             {search.nightsFrom}–{search.nightsTo} ночей · {search.adults} взр. /{" "}
             {search.childAges.length} дет.
           </p>
@@ -117,13 +119,21 @@ export function TourResults({ search, onSelect, onCustom }) {
             <Card className="hotel-card" key={hotel.id}>
               <CardContent className="hotel-content p-0">
                 <div className="hotel-overview">
-                  <img
-                    src={hotel.image}
-                    alt={hotel.alt}
-                    width="600"
-                    height="400"
-                    loading="lazy"
-                  />
+                  {hotel.image ? (
+                    <img
+                      src={hotel.image}
+                      alt={hotel.alt}
+                      width="600"
+                      height="400"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="hotel-placeholder">
+                      <span>{hotel.countryName}</span>
+                      <strong>{hotel.destination}</strong>
+                      <small>Демонстрационный отель · фото ожидается</small>
+                    </div>
+                  )}
                   <div className="hotel-copy">
                     <div className="hotel-meta">
                       <span aria-label={`${hotel.stars} звёзд`}>

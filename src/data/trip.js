@@ -1,3 +1,4 @@
+import { countryName } from "./destinations.js";
 export function localToday() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -8,7 +9,8 @@ export function addDays(value, days) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 export const initialTrip = {
-  destination: "Бали, Индонезия",
+  country: "any",
+  destination: "any",
   departureCity: "Москва",
   startDate: addDays(localToday(), 14),
   endDate: addDays(localToday(), 21),
@@ -45,7 +47,8 @@ export function validateTrip(trip) {
 export function tripSummary(trip) {
   return [
     `Вылет из: ${trip.departureCity}`,
-    trip.destination,
+    countryName(trip.country),
+    trip.destination === "any" ? "Любой курорт" : trip.destination,
     `Возможный вылет: ${formatDate(trip.startDate)} — ${formatDate(trip.endDate)}`,
     `${trip.nightsFrom}–${trip.nightsTo} ночей`,
     `${trip.adults} взр. · ${trip.childAges.length} дет.`,

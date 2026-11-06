@@ -1,3 +1,5 @@
+import { CountryPicker } from "./CountryPicker";
+import { getCountry } from "../data/destinations";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
@@ -44,8 +46,8 @@ export function TripFinder({ trip, onChange, onSubmit }) {
       onSubmit={submit}
     >
       <div className="finder-heading">
-        <h2 id="finder-title">Каким будет ваш Бали?</h2>
-        <p>Выберите даты. Найдите свой отель. Отправляйтесь к океану.</p>
+        <h2 id="finder-title">Куда отправимся?</h2>
+        <p>Туры по всему миру. Начните со страны и дат вылета.</p>
       </div>
       <div className="search-primary">
         <ChoiceField
@@ -55,12 +57,9 @@ export function TripFinder({ trip, onChange, onSubmit }) {
           onChange={(v) => update({ departureCity: v })}
           options={["Москва", "Ташкент", "Самара"]}
         />
-        <ChoiceField
-          id="destination"
-          label="Направление"
-          value={trip.destination}
-          onChange={(v) => update({ destination: v })}
-          options={["Бали, Индонезия", "Чангу", "Убуд", "Острова"]}
+        <CountryPicker
+          value={trip.country}
+          onChange={(country) => update({ country, destination: "any" })}
         />
         <DepartureRange trip={trip} onChange={update} errors={errors} />
         <fieldset className="night-range">
@@ -97,6 +96,22 @@ export function TripFinder({ trip, onChange, onSubmit }) {
           errors={errors}
         />
         <div>
+          <ChoiceField
+            id="destination"
+            label="Курорт"
+            value={trip.destination}
+            onChange={(v) => update({ destination: v })}
+            options={[
+              {
+                value: "any",
+                label:
+                  trip.country === "any"
+                    ? "Сначала выберите страну"
+                    : "Любой курорт",
+              },
+              ...(getCountry(trip.country)?.resorts || []),
+            ]}
+          />
           <ChoiceField
             id="budget"
             label="Бюджет на всех, включая перелёт"

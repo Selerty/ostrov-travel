@@ -54,12 +54,20 @@ export function TourDetails({ selection, onClose }) {
             {hotel && offer && (
               <>
                 <div className="details-cover">
-                  <img src={hotel.image} alt={hotel.alt} />
+                  {hotel.image ? (
+                    <img src={hotel.image} alt={hotel.alt} />
+                  ) : (
+                    <div className="hotel-placeholder">
+                      <strong>{hotel.destination}</strong>
+                      <span>{hotel.countryName}</span>
+                      <small>Фото отеля ожидается</small>
+                    </div>
+                  )}
                   <Badge>{hotel.place}</Badge>
                 </div>
                 <div className="booking-summary">
                   <p>
-                    {search.departureCity} → Бали ·{" "}
+                    {search.departureCity} → {hotel.countryName} ·{" "}
                     {formatDate(offer.departureDate)} —{" "}
                     {formatDate(addDays(offer.departureDate, offer.nights))}
                   </p>
@@ -107,11 +115,11 @@ export function TourDetails({ selection, onClose }) {
                       <Plane size={18} /> Перелёт туда и обратно
                     </h4>
                     <p>
-                      {search.departureCity} → Денпасар ·{" "}
+                      {search.departureCity} → {hotel.arrival} ·{" "}
                       {formatDate(offer.departureDate)}
                     </p>
                     <p>
-                      Денпасар → {search.departureCity} ·{" "}
+                      {hotel.arrival} → {search.departureCity} ·{" "}
                       {formatDate(addDays(offer.departureDate, offer.nights))}
                     </p>
                     <p>{offer.flight}</p>

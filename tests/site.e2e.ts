@@ -6,8 +6,12 @@ async function select(screen, label, option) {
   await screen.getByRole("combobox", label).tap();
   await screen.getByRole("option", option).tap();
 }
+async function chooseCountry(screen, name) {
+  await screen.getByRole("combobox", "Страна").tap();
+  await screen.getByRole("option", name).tap();
+}
 async function openUbud(screen) {
-  await select(screen, "Направление", "Убуд");
+  await select(screen, "Курорт", "Убуд");
   await screen.getByRole("button", "Найти туры").tap();
   await screen.getByRole("button", "Выбрать вариант — Среди зелени").tap();
   await screen
@@ -23,6 +27,7 @@ test("complete hotel, offer, details and demo inquiry journey", async ({
   screen,
 }) => {
   await app.open("/");
+  await chooseCountry(screen, "Индонезия");
   await screen.getByRole("button", "Увеличить число детей").tap();
   await select(screen, "Возраст ребёнка 1", "5 лет");
   await openUbud(screen);
@@ -51,6 +56,7 @@ test("departure window is independent of number of nights", async ({
   screen,
 }) => {
   await app.open("/");
+  await chooseCountry(screen, "Индонезия");
   await screen.getByRole("button", "Даты возможного вылета").tap();
   await screen.getByLabel("Вылет не раньше").fill(initialTrip.startDate);
   await screen.getByLabel("Вылет не позже").fill(initialTrip.startDate);
@@ -78,6 +84,7 @@ test("budget empty state offers an individual enquiry", async ({
   screen,
 }) => {
   await app.open("/");
+  await chooseCountry(screen, "Индонезия");
   await select(screen, "Бюджет на всех, включая перелёт", "До 300 000 ₽");
   await screen.getByRole("button", "Найти туры").tap();
   await expect(
@@ -95,6 +102,7 @@ test("calendar and child validation block an invalid search", async ({
   screen,
 }) => {
   await app.open("/");
+  await chooseCountry(screen, "Индонезия");
   await screen.getByRole("button", "Даты возможного вылета").tap();
   await screen
     .getByLabel("Вылет не позже")
@@ -115,6 +123,7 @@ test("hotel filters narrow results and reset without losing search", async ({
   screen,
 }) => {
   await app.open("/");
+  await chooseCountry(screen, "Индонезия");
   await screen.getByRole("button", "Найти туры").tap();
   await select(screen, "Класс отеля", "5 звёзд");
   await expect(screen.getByText("Найдено отелей: 2")).toBeVisible();
@@ -128,4 +137,33 @@ test("hotel filters narrow results and reset without losing search", async ({
   ).toHaveCount(0);
   await screen.getByRole("button", "Сбросить фильтры").tap();
   await expect(screen.getByText("Найдено отелей: 3")).toBeVisible();
+});
+
+test("country search resets resort and changes catalog and route", async ({
+  app,
+  screen,
+}) => {
+  await app.open("/");
+  await chooseCountry(screen, "Индонезия");
+  await select(screen, "Курорт", "Убуд");
+  await screen.getByRole("combobox", "Страна").tap();
+  await screen.getByLabel("Поиск страны").fill("Еги");
+  await screen.getByRole("option", "Египет").tap();
+  await expect(screen.getByRole("combobox", "Курорт")).toHaveText(
+    "Любой курорт",
+  );
+  await select(screen, "Курорт", "Хургада");
+  await screen.getByRole("button", "Найти туры").tap();
+  await expect(screen.getByText("Найдено отелей: 1")).toBeVisible();
+  await screen
+    .getByRole("button", "Выбрать вариант — Ваш отдых: Хургада")
+    .tap();
+  await screen
+    .getByRole(
+      "button",
+      `Подробнее: Ваш отдых: Хургада, ${formatDate(initialTrip.startDate)}, 7 ночей, Завтраки`,
+    )
+    .tap();
+  await screen.getByRole("tab", "Перелёт").tap();
+  await expect(screen.getByText(new RegExp(`Москва → Хургада`))).toBeVisible();
 });

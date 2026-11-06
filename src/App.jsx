@@ -23,13 +23,11 @@ export default function App() {
     setSearch({ ...value, childAges: [...value.childAges] });
     setSelection(null);
     requestAnimationFrame(() => {
-      document
-        .getElementById("tour-results")
-        .scrollIntoView({
-          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-            ? "instant"
-            : "smooth",
-        });
+      document.getElementById("tour-results").scrollIntoView({
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
       document.getElementById("tour-results").focus({ preventScroll: true });
     });
   }
@@ -37,7 +35,10 @@ export default function App() {
     setSelection({ hotel, offer, search });
   }
   function selectDestination(destination) {
-    updateTrip({ destination });
+    updateTrip({
+      country: "indonesia",
+      destination: destination === "Острова" ? "Нуса-Дуа" : destination,
+    });
     requestAnimationFrame(() =>
       document
         .getElementById("trip-finder")
