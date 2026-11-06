@@ -57,30 +57,10 @@ visibilityObserver.observe(hero);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     if (!video.paused) { observerPaused = true; video.pause(); }
-  } else if (observerPaused && !manuallyPaused && !reducedMotion.matches && !dialog.open) {
+  } else if (observerPaused && !manuallyPaused && !reducedMotion.matches) {
     observerPaused = false;
     playBackground();
   }
-});
-
-const dialog = document.querySelector('#film-dialog');
-const film = document.querySelector('#film-video');
-let wasPlaying = false;
-document.querySelector('#watch-film').addEventListener('click', async () => {
-  wasPlaying = !video.paused;
-  video.pause();
-  dialog.showModal();
-  if (!film.src) film.src = video.dataset.src;
-  try { await film.play(); } catch { /* Native controls remain available. */ }
-});
-document.querySelector('#close-film').addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', event => {
-  const bounds = dialog.getBoundingClientRect();
-  if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
-});
-dialog.addEventListener('close', () => {
-  film.pause();
-  if (wasPlaying && !manuallyPaused && !reducedMotion.matches) playBackground();
 });
 
 const menu = document.querySelector('.menu-button');
