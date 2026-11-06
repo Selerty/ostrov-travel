@@ -10,89 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="script.js" defer></script>
 </head>
 <body>
-  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
-    <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
-    <symbol id="play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7Z"/></symbol>
-    <symbol id="pause" viewBox="0 0 24 24"><path d="M9 5v14M16 5v14"/></symbol>
-    <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
-    <symbol id="menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
-    <symbol id="chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></symbol>
-  </defs></svg>
-  <a class="skip-link" href="#main">К содержимому</a>
-  <main id="main">
-    <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="hero-media" aria-hidden="true">
-        <img class="hero-poster" src="assets/surf.jpg" alt="" fetchpriority="high">
-        <video id="hero-video" class="hero-video" muted loop playsinline preload="none" poster="assets/surf.jpg" tabindex="-1" data-src="assets/ocean-loop.mp4"></video>
-        <div class="hero-shade"></div>
-      </div>
-      <div class="hero-inner container">
-        <header class="header">
-          <a class="brand" href="#top" aria-label="Остров — на главную">остров<span class="brand-dot"></span></a>
-          <nav class="navigation" id="navigation" aria-label="Основное меню">
-            <a href="#journeys">Путешествия</a><a href="#approach">Наш подход</a><a href="#inspiration">Вдохновение</a>
-          </nav>
-          <a class="header-contact" href="#contact">Обсудить поездку</a>
-          <button class="menu-button" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navigation"><svg class="icon"><use href="#menu"></use></svg></button>
-        </header>
-        <div class="hero-copy">
-          <h1 id="hero-title">Меньше «когда-нибудь».<br>Больше океана.</h1>
-          <p>Бали в вашем ритме. От первой волны<br class="desktop-break"> до последнего заката — всё уже продумано.</p>
-          <div class="hero-actions">
-            <a class="button button-lime" href="#journeys">Подобрать путешествие<svg class="icon"><use href="#arrow"></use></svg></a>
-          </div>
-        </div>
-        <div class="hero-bottom">
-          <form class="trip-finder" id="trip-finder" aria-label="Подбор путешествия">
-            <label class="finder-field"><span>Куда</span><span class="select-wrap"><select name="destination" id="destination"><option value="Бали, Индонезия">Бали, Индонезия</option><option value="Чангу">Чангу — океан</option><option value="Убуд">Убуд — тишина</option><option value="Острова">Острова — приключения</option></select><svg class="icon"><use href="#chevron"></use></svg></span></label>
-            <label class="finder-field"><span>Когда</span><input id="departure" name="departure" type="date" aria-label="Дата начала поездки"></label>
-            <label class="finder-field"><span>С кем</span><span class="select-wrap"><select id="travelers" name="travelers"><option value="2">Двое путешественников</option><option value="1">Один путешественник</option><option value="3">Трое путешественников</option><option value="4">Четверо путешественников</option></select><svg class="icon"><use href="#chevron"></use></svg></span></label>
-            <button class="button button-dark" type="submit">Найти мой Бали<svg class="icon"><use href="#arrow"></use></svg></button>
-          </form>
-          <div class="video-caption"><span>Вдохновлено океаном.</span><button class="video-toggle" id="video-toggle" type="button" aria-label="Воспроизвести видео"><svg class="icon"><use href="#play"></use></svg><span>Включить видео</span></button></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="journeys container section-space" id="journeys" aria-labelledby="journeys-title">
-      <div class="section-intro">
-        <h2 id="journeys-title">Не просто место.<br>Ваше состояние.</h2>
-        <p>Уехать, чтобы снова почувствовать вкус к простым вещам: солёному ветру, неспешному завтраку, дороге без спешки. Мы поможем найти свой остров.</p>
-      </div>
-      <div class="editorial-grid" id="inspiration">
-        <article class="journey journey-ocean">
-          <a class="image-link" href="#contact" data-trip="Чангу" aria-label="Спланировать путешествие в Чангу"><img src="assets/surf.jpg" alt="Сёрфер внутри бирюзовой волны" width="1200" height="800" loading="lazy"><span class="image-action"><svg class="icon"><use href="#arrow"></use></svg></span></a>
-          <a class="journey-title" href="#contact" data-trip="Чангу"><h3>Чангу. На одной волне с собой.</h3></a>
-          <p>Сёрфинг, океан и вечера без расписания.</p>
-        </article>
-        <article class="journey journey-jungle">
-          <a class="image-link" href="#contact" data-trip="Убуд" aria-label="Спланировать спокойный отдых на Бали"><img src="assets/bali.jpg" alt="Балийский храм у озера среди зелёных гор" width="2000" height="2654" loading="lazy"><span class="image-action"><svg class="icon"><use href="#arrow"></use></svg></span></a>
-          <a class="journey-title" href="#contact" data-trip="Убуд"><h3>Убуд. Замедлиться.</h3></a>
-          <p>Зелень, тишина и время для себя.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="approach" id="approach" aria-labelledby="approach-title"><div class="container approach-grid">
-      <img class="approach-photo" src="assets/islands.jpg" alt="Маленькие зелёные острова в бирюзовой воде" width="900" height="600" loading="lazy">
-      <div class="approach-copy"><h2 id="approach-title">Ваш отпуск.<br>Без лишних забот.</h2><p>Подберём места, которые хочется запомнить. Соединим их в маршрут, в котором удобно жить.</p><ul class="included"><li>Проживание</li><li>Трансферы</li><li>Впечатления</li></ul><a class="button button-lime" href="#contact">Собрать мой маршрут<svg class="icon"><use href="#arrow"></use></svg></a></div>
-    </div></section>
-
-    <section class="contact" id="contact" aria-labelledby="contact-title"><div class="container contact-grid">
-      <div class="contact-copy"><h2 id="contact-title">Пора сменить<br>картинку.</h2><p>Расскажите, о каком отдыхе мечтаете.</p><p id="trip-summary" class="trip-summary" hidden></p></div>
-      <form class="contact-form" id="contact-form">
-        <label class="contact-field"><span>Как вас зовут?</span><input type="text" name="name" id="name" autocomplete="given-name" placeholder="Ваше имя" maxlength="80" required></label>
-        <label class="contact-field"><span>Телефон или Telegram</span><input type="text" name="contact" id="contact-detail" autocomplete="tel" placeholder="+7 или @username" maxlength="100" required></label>
-        <button class="button button-dark" type="submit">Начать планировать<svg class="icon"><use href="#arrow"></use></svg></button>
-        <small>Демонстрационная форма. Данные не отправляются.</small>
-        <p class="form-status" id="form-status" role="status" hidden></p>
-      </form>
-    </div></section>
-  </main>
-  <footer class="footer container"><a class="brand" href="#top">остров<span class="brand-dot"></span></a><p>Путешествия, к которым хочется возвращаться.</p><a href="#contact">Связаться с нами<svg class="icon"><use href="#arrow"></use></svg></a><span class="concept-note">Концепция сайта · Вариант 03</span></footer>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

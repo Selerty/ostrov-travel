@@ -5,3 +5,9 @@ DESIGN.md
 previews/
 variants/
 .openai/
+node_modules/
+.e2e/
+.env
+.env.*
+!.env.example
+dist/
