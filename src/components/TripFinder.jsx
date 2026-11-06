@@ -1,33 +1,142 @@
-import { useRef, useState } from 'react';
-import { Icon } from './Icon';
-import { TravelerPicker } from './TravelerPicker';
-import { localToday, validateTrip } from '../data/trip';
-
+import { useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "./ui/accordion";
+import { ChoiceField } from "./ChoiceField";
+import { TravelerPicker } from "./TravelerPicker";
+import { DepartureRange } from "./DepartureRange";
+import { validateTrip } from "../data/trip";
 export function TripFinder({ trip, onChange, onSubmit }) {
   const [errors, setErrors] = useState({});
-  const form = useRef(null);
-  const update = patch => { onChange(patch); setErrors({}); };
-  function submit(event) {
-    event.preventDefault();
-    const nextErrors = validateTrip(trip);
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length) { requestAnimationFrame(() => form.current.querySelector('[aria-invalid="true"]')?.focus()); return; }
+  const update = (patch) => {
+    onChange(patch);
+    setErrors({});
+  };
+  function submit(e) {
+    e.preventDefault();
+    const next = validateTrip(trip);
+    setErrors(next);
+    if (Object.keys(next).length) {
+      requestAnimationFrame(() =>
+        e.target.querySelector('[aria-invalid="true"]')?.focus(),
+      );
+      return;
+    }
     onSubmit(trip);
   }
-  return <form ref={form} className="trip-finder" id="trip-finder" aria-labelledby="finder-title" noValidate onSubmit={submit}>
-    <div className="finder-heading"><h2 id="finder-title">Каким будет ваш Бали?</h2><p>Начнём с ваших планов. Остальное подберём вместе.</p></div>
-    <div className="finder-main">
-      <label className="finder-field destination-field"><span>Куда отправимся</span><span className="select-wrap"><select name="destination" value={trip.destination} onChange={e => update({ destination: e.target.value })}><option>Бали, Индонезия</option><option value="Чангу">Чангу — океан и сёрфинг</option><option value="Убуд">Убуд — природа и тишина</option><option value="Острова">Бали и соседние острова</option></select><Icon name="chevron" /></span></label>
-      <fieldset className="dates-fieldset"><legend>Когда поедем</legend><div className="date-fields">
-        {[['startDate', 'Вылет'], ['endDate', 'Возвращение']].map(([key, label]) => <label className="finder-field" key={key}><span>{label}</span><input id={key} name={key} aria-label={label} type="date" disabled={trip.flexibleDates} value={trip[key]} min={key === 'startDate' ? localToday() : trip.startDate || localToday()} onChange={e => update({ [key]: e.target.value })} aria-invalid={!!errors[key]} aria-describedby={errors[key] ? `${key}-error` : undefined} />{errors[key] && <span className="field-error" id={`${key}-error`}>{errors[key]}</span>}</label>)}
-      </div><label className="flexible-check"><input type="checkbox" checked={trip.flexibleDates} onChange={e => update({ flexibleDates: e.target.checked })} />Даты пока не определены</label></fieldset>
-      <TravelerPicker adults={trip.adults} childAges={trip.childAges} onChange={update} errors={errors} />
-    </div>
-    <details className="finder-preferences"><summary>Город вылета, бюджет и пожелания <Icon name="chevron" /></summary><div className="preferences-grid">
-      <label className="finder-field"><span>Город вылета</span><input value={trip.departureCity} onChange={e => update({ departureCity: e.target.value })} placeholder="Например, Москва" maxLength={80} /></label>
-      <label className="finder-field"><span>Бюджет на всех, включая перелёт</span><select value={trip.budget} onChange={e => update({ budget: e.target.value })}><option value="">Обсудим с менеджером</option><option>До 300 000 ₽</option><option>300 000–500 000 ₽</option><option>500 000–800 000 ₽</option><option>От 800 000 ₽</option></select></label>
-      <label className="finder-field wishes-field"><span>Что важно в путешествии</span><textarea value={trip.wishes} onChange={e => update({ wishes: e.target.value })} placeholder="Отель у океана, первая волна или несколько дней в Убуде…" maxLength={1000} rows={2} /></label>
-    </div></details>
-    <div className="finder-submit"><p>Покажем подходящие программы<br />и примерную стоимость на всех.</p><button className="button button-dark" type="submit">Показать туры<Icon name="arrow" /></button></div>
-  </form>;
+  const nights = Array.from({ length: 19 }, (_, i) => ({
+    value: String(i + 3),
+    label: `${i + 3}`,
+  }));
+  return (
+    <form
+      className="trip-finder"
+      id="trip-finder"
+      aria-labelledby="finder-title"
+      noValidate
+      onSubmit={submit}
+    >
+      <div className="finder-heading">
+        <h2 id="finder-title">Каким будет ваш Бали?</h2>
+        <p>Выберите даты. Найдите свой отель. Отправляйтесь к океану.</p>
+      </div>
+      <div className="search-primary">
+        <ChoiceField
+          id="departureCity"
+          label="Город вылета"
+          value={trip.departureCity}
+          onChange={(v) => update({ departureCity: v })}
+          options={["Москва", "Ташкент", "Самара"]}
+        />
+        <ChoiceField
+          id="destination"
+          label="Направление"
+          value={trip.destination}
+          onChange={(v) => update({ destination: v })}
+          options={["Бали, Индонезия", "Чангу", "Убуд", "Острова"]}
+        />
+        <DepartureRange trip={trip} onChange={update} errors={errors} />
+        <fieldset className="night-range">
+          <legend>Количество ночей</legend>
+          <div>
+            <ChoiceField
+              id="nightsFrom"
+              label="От"
+              value={trip.nightsFrom}
+              options={nights}
+              onChange={(v) => update({ nightsFrom: Number(v) })}
+            />
+            <span>—</span>
+            <ChoiceField
+              id="nightsTo"
+              label="До"
+              value={trip.nightsTo}
+              options={nights}
+              onChange={(v) => update({ nightsTo: Number(v) })}
+            />
+          </div>
+          {errors.nights && (
+            <p role="alert" className="field-error">
+              {errors.nights}
+            </p>
+          )}
+        </fieldset>
+      </div>
+      <div className="search-secondary">
+        <TravelerPicker
+          adults={trip.adults}
+          childAges={trip.childAges}
+          onChange={update}
+          errors={errors}
+        />
+        <div>
+          <ChoiceField
+            id="budget"
+            label="Бюджет на всех, включая перелёт"
+            value={trip.budget}
+            onChange={(v) => update({ budget: v })}
+            options={[
+              { value: "any", label: "Любой бюджет" },
+              { value: "300000", label: "До 300 000 ₽" },
+              { value: "500000", label: "До 500 000 ₽" },
+              { value: "800000", label: "До 800 000 ₽" },
+            ]}
+          />
+          <Accordion type="single" collapsible>
+            <AccordionItem value="wishes">
+              <AccordionTrigger>Пожелания к отдыху</AccordionTrigger>
+              <AccordionContent>
+                <Label htmlFor="wishes">Что для вас важно?</Label>
+                <Textarea
+                  id="wishes"
+                  value={trip.wishes}
+                  onChange={(e) => update({ wishes: e.target.value })}
+                  placeholder="Тихий отель, сёрфинг или отдых с детьми…"
+                  maxLength={1000}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </div>
+      <div className="finder-submit">
+        <p>
+          Отели и варианты туров с ценой на всех.
+          <br />
+          Выбор тура не обязывает к покупке.
+        </p>
+        <Button className="search-submit" size="lg" type="submit">
+          Найти туры
+          <ArrowRight />
+        </Button>
+      </div>
+    </form>
+  );
 }

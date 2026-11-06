@@ -1,54 +1,131 @@
-import { test } from '@e2e-dev/web';
-import { expect } from 'e2e';
+import { test } from "@e2e-dev/web";
+import { expect } from "e2e";
+import { initialTrip, formatDate, addDays } from "../src/data/trip.js";
 
-test('keeps trip preferences when moving to the demo enquiry', async ({ app, screen }) => {
-  await app.open('/');
-  await screen.getByLabel('Куда отправимся').selectOption({ value: 'Убуд' });
-  await screen.getByRole('button', 'Уменьшить число взрослых').tap();
-  await screen.getByRole('button', 'Показать туры').tap();
-  await screen.getByRole('button', 'Обсудить этот тур').tap();
-  await expect(screen.getByText(/Даты подберём вместе/)).toContainText('1 взрослый');
-  await screen.getByLabel('Как вас зовут?').fill('Тест');
-  await screen.getByLabel('Телефон или Telegram').fill('@test_example');
-  await screen.getByRole('button', 'Начать планировать').tap();
-  await expect(screen.getByText(/^Так будет выглядеть отправка заявки/)).toContainText('заявка не отправлена');
-  await screen.getByRole('link', /Изменить пожелания/).tap();
-  await expect(screen.getByLabel('Куда отправимся')).toHaveValue('Убуд');
+async function select(screen, label, option) {
+  await screen.getByRole("combobox", label).tap();
+  await screen.getByRole("option", option).tap();
+}
+async function openUbud(screen) {
+  await select(screen, "Направление", "Убуд");
+  await screen.getByRole("button", "Найти туры").tap();
+  await screen.getByRole("button", "Выбрать вариант — Среди зелени").tap();
+  await screen
+    .getByRole(
+      "button",
+      `Подробнее: Среди зелени, ${formatDate(initialTrip.startDate)}, 7 ночей, Завтраки`,
+    )
+    .tap();
+}
+
+test("complete hotel, offer, details and demo inquiry journey", async ({
+  app,
+  screen,
+}) => {
+  await app.open("/");
+  await screen.getByRole("button", "Увеличить число детей").tap();
+  await select(screen, "Возраст ребёнка 1", "5 лет");
+  await openUbud(screen);
+  await expect(screen.getByRole("dialog")).toBeVisible();
+  await expect(screen.getByText("2 взр. / 1 дет. · возраст: 5")).toBeVisible();
+  await screen.getByRole("tab", "Перелёт").tap();
+  await expect(screen.getByText("Багаж 20 кг")).toBeVisible();
+  await screen.getByRole("button", "Оставить заявку на тур").tap();
+  await screen.getByRole("button", "Проверить заявку").tap();
+  await expect(screen.getByText("Укажите ваше имя.")).toBeVisible();
+  await screen.getByTestId("booking-name").fill("Анна");
+  await screen.getByTestId("booking-phone").fill("+79991234567");
+  await screen.getByRole("button", "Вернуться к туру").tap();
+  await screen.getByRole("button", "Оставить заявку на тур").tap();
+  await expect(screen.getByTestId("booking-name")).toHaveValue("Анна");
+  await screen.getByTestId("booking-consent").tap();
+  await screen.getByRole("button", "Проверить заявку").tap();
+  await expect(screen.getByText("Вы прошли сценарий заявки")).toBeVisible();
+  await screen.getByRole("button", "Вернуться к туру").tap();
+  await screen.getByRole("button", "Вернуться к вариантам").tap();
+  await expect(screen.getByRole("dialog")).toBeHidden();
 });
 
-test('validates dates and child ages before proceeding', async ({ app, screen }) => {
-  await app.open('/');
-  await screen.getByLabel('Даты пока не определены').tap();
-  await screen.getByLabel('Вылет', { exact: true }).fill('2099-06-15');
-  await screen.getByLabel('Возвращение', { exact: true }).fill('2099-06-10');
-  await screen.getByRole('button', 'Увеличить число детей').tap();
-  await screen.getByRole('button', 'Показать туры').tap();
-  await expect(screen.getByText('Возвращение должно быть позже вылета.')).toBeVisible();
-  await expect(screen.getByText('Укажите возраст ребёнка на момент поездки.')).toBeVisible();
-  await screen.getByLabel('Возвращение', { exact: true }).fill('2099-06-25');
-  await screen.getByLabel('Возраст ребёнка 1').selectOption({ value: '5' });
-  await screen.getByRole('button', 'Показать туры').tap();
-  await expect(screen.getByText('Подходящих программ: 1')).toBeVisible();
-  await screen.getByRole('button', 'Обсудить этот тур').tap();
-  await expect(screen.getByText(/дети: 5 лет/)).toContainText('15 июня — 25 июня');
+test("departure window is independent of number of nights", async ({
+  app,
+  screen,
+}) => {
+  await app.open("/");
+  await screen.getByRole("button", "Даты возможного вылета").tap();
+  await screen.getByLabel("Вылет не раньше").fill(initialTrip.startDate);
+  await screen.getByLabel("Вылет не позже").fill(initialTrip.startDate);
+  await screen.getByRole("button", "Готово").tap();
+  await screen.getByRole("button", "Найти туры").tap();
+  await expect(screen.getByText("Найдено отелей: 3")).toBeVisible();
+  await screen.getByRole("button", "Выбрать вариант — Океан рядом").tap();
+  await screen
+    .getByRole(
+      "button",
+      `Подробнее: Океан рядом, ${formatDate(initialTrip.startDate)}, 7 ночей, Завтраки`,
+    )
+    .tap();
+  await expect(
+    screen.getByText(
+      new RegExp(
+        `${formatDate(initialTrip.startDate)} — ${formatDate(addDays(initialTrip.startDate, 7))}`,
+      ),
+    ),
+  ).toBeVisible();
 });
 
-test('accepts a destination from a journey card', async ({ app, screen }) => {
-  await app.open('/');
-  await screen.getByRole('link', 'Спланировать путешествие в Чангу').tap();
-  await expect(screen.getByLabel('Куда отправимся')).toHaveValue('Чангу');
-  await screen.getByRole('button', 'Показать туры').tap();
-  await screen.getByRole('button', 'Обсудить этот тур').tap();
-  await expect(screen.getByText(/Даты подберём вместе/)).toContainText('Чангу');
+test("budget empty state offers an individual enquiry", async ({
+  app,
+  screen,
+}) => {
+  await app.open("/");
+  await select(screen, "Бюджет на всех, включая перелёт", "До 300 000 ₽");
+  await screen.getByRole("button", "Найти туры").tap();
+  await expect(
+    screen.getByText("По вашим параметрам туров не найдено"),
+  ).toBeVisible();
+  await screen.getByRole("button", "Обсудить индивидуальный маршрут").tap();
+  await expect(
+    screen.getByRole("heading", "Индивидуальное путешествие"),
+  ).toBeVisible();
+  await expect(screen.getByTestId("booking-phone")).toBeVisible();
 });
 
-test('shows an honest empty state when the budget excludes all programs', async ({ app, screen }) => {
-  await app.open('/');
-  await screen.getByText('Город вылета, бюджет и пожелания').tap();
-  await screen.getByLabel('Бюджет на всех, включая перелёт').selectOption('До 300 000 ₽');
-  await screen.getByRole('button', 'Показать туры').tap();
-  await expect(screen.getByText('По вашим параметрам программ не найдено')).toBeVisible();
-  await expect(screen.getByRole('button', 'Обсудить этот тур')).toHaveCount(0);
-  await screen.getByRole('button', 'Обсудить индивидуальный маршрут').tap();
-  await expect(screen.getByRole('heading', 'Индивидуальное путешествие')).toBeVisible();
+test("calendar and child validation block an invalid search", async ({
+  app,
+  screen,
+}) => {
+  await app.open("/");
+  await screen.getByRole("button", "Даты возможного вылета").tap();
+  await screen
+    .getByLabel("Вылет не позже")
+    .fill(addDays(initialTrip.startDate, -1));
+  await screen.getByRole("button", "Готово").tap();
+  await screen.getByRole("button", "Увеличить число детей").tap();
+  await screen.getByRole("button", "Найти туры").tap();
+  await expect(
+    screen.getByText("Конец диапазона не может быть раньше начала."),
+  ).toBeVisible();
+  await expect(
+    screen.getByText("Укажите возраст ребёнка на момент поездки."),
+  ).toBeVisible();
+});
+
+test("hotel filters narrow results and reset without losing search", async ({
+  app,
+  screen,
+}) => {
+  await app.open("/");
+  await screen.getByRole("button", "Найти туры").tap();
+  await select(screen, "Класс отеля", "5 звёзд");
+  await expect(screen.getByText("Найдено отелей: 2")).toBeVisible();
+  await select(screen, "Питание", "Полупансион");
+  await screen.getByRole("button", "Выбрать вариант — Среди зелени").tap();
+  await expect(
+    screen.getByRole(
+      "button",
+      `Подробнее: Среди зелени, ${formatDate(initialTrip.startDate)}, 7 ночей, Завтраки`,
+    ),
+  ).toHaveCount(0);
+  await screen.getByRole("button", "Сбросить фильтры").tap();
+  await expect(screen.getByText("Найдено отелей: 3")).toBeVisible();
 });
