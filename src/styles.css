@@ -2057,3 +2057,4 @@ body:has([data-slot="sheet-content"]) {
 [data-slot="command-input-wrapper"]{height:48px;transition:border-color .15s,box-shadow .15s;}
 [data-slot="command-input-wrapper"]:focus-within{border-bottom-color:#34766b;box-shadow:inset 0 -1px 0 #34766b;}
 [data-slot="command-input"]{height:44px;border-radius:0;outline:none;box-shadow:none;}
+.country-flag{display:block;width:24px;height:18px;object-fit:cover;border-radius:2px;flex-shrink:0;box-shadow:0 0 0 1px rgba(9,45,52,.1)}

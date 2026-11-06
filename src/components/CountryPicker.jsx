@@ -1,5 +1,6 @@
+import { CountryFlag } from "./CountryFlag";
 import { useState } from "react";
-import { Check, ChevronsUpDown, Globe2 } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -28,7 +29,7 @@ export function CountryPicker({ value, onChange }) {
             aria-expanded={open}
             className="country-trigger"
           >
-            <Globe2 size={16} />
+            <CountryFlag country={value} />
             <span>{countryName(value)}</span>
             <ChevronsUpDown size={14} />
           </Button>
@@ -53,7 +54,8 @@ export function CountryPicker({ value, onChange }) {
                       setOpen(false);
                     }}
                   >
-                    <span>{country.name}</span>
+                    <CountryFlag country={country.id} />
+                  <span>{country.name}</span>
                     {value === country.id && (
                       <Check className="ml-auto" size={16} />
                     )}

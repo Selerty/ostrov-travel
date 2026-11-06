@@ -10,3 +10,5 @@ Source page: https://www.pexels.com/video/aerial-view-of-ocean-waves-4631568/
 Download: https://videos.pexels.com/video-files/4631568/4631568-hd_1280_720_24fps.mp4
 The audio track was removed; video stream is unchanged. ocean-poster.jpg is a frame at 3 seconds.
 The clip is mood footage for a prototype and is not presented as location-verified footage of Bali.
+
+Country flags: flag-icons by Panayiotis Lipiridis, MIT license, https://github.com/lipis/flag-icons . Imported as individual SVG assets from the npm package.
